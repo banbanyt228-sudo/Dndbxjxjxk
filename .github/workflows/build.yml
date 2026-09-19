@@ -41,8 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MinecraftAuthFix
-          path: output/MinecraftAuthFix.dylib     - name: Upload Dylib Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: MinecraftAuthFix
           path: output/MinecraftAuthFix.dylib
