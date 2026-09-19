@@ -1,0 +1,41 @@
+name: Build MinecraftAuthFix
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download fishhook source
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/facebook/fishhook/master/fishhook.h -o fishhook.h
+          curl -fsSL https://raw.githubusercontent.com/facebook/fishhook/master/fishhook.c -o fishhook.c
+
+      - name: Compile Dylib
+        run: |
+          mkdir -p output
+          xcrun -sdk iphoneos clang++ -arch arm64 \
+            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+            -miphoneos-version-min=14.0 \
+            -dynamiclib \
+            -fobjc-arc \
+            -framework Foundation \
+            -framework UIKit \
+            -framework Security \
+            -framework AuthenticationServices \
+            fishhook.c \
+            mod.mm \
+            -o output/MinecraftAuthFix.dylib
+
+      - name: Upload Dylib Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MinecraftAuthFix
+          path: output/MinecraftAuthFix.dylib
